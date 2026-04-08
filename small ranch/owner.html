@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Small Ranch – Owner</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Crimson+Pro:wght@300;400;600&display=swap');
+  :root{--cream:#f5f0e8;--brown:#3d2b1f;--gold:#c9a84c;--rust:#8b4513;--sage:#6b7c5e;--dark:#1a1208;--panel:rgba(245,240,232,0.05);}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--dark);color:var(--cream);font-family:'Crimson Pro',serif;min-height:100vh;display:flex;}
+  body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 10% 80%,rgba(139,69,19,0.15) 0%,transparent 55%),radial-gradient(ellipse at 90% 10%,rgba(201,168,76,0.1) 0%,transparent 50%);pointer-events:none;}
+
+  /* SIDEBAR */
+  .sidebar{width:240px;min-height:100vh;background:rgba(0,0,0,0.4);border-right:1px solid rgba(201,168,76,0.2);display:flex;flex-direction:column;padding:2rem 1.2rem;gap:0.3rem;position:fixed;top:0;left:0;}
+  .logo{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--gold);margin-bottom:1.5rem;display:flex;align-items:center;gap:0.5rem;}
+  .nav-btn{background:none;border:none;color:rgba(245,240,232,0.65);font-family:'Crimson Pro',serif;font-size:1rem;padding:0.65rem 1rem;border-radius:3px;text-align:left;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:0.6rem;}
+  .nav-btn:hover,.nav-btn.active{background:rgba(201,168,76,0.12);color:var(--gold);}
+  .nav-btn .ico{font-size:1.1rem;width:1.4rem;}
+  .back{margin-top:auto;color:rgba(245,240,232,0.35);font-size:0.85rem;text-decoration:none;display:block;text-align:center;padding:0.5rem;border:1px solid rgba(201,168,76,0.1);border-radius:3px;transition:all 0.2s;}
+  .back:hover{color:var(--gold);border-color:rgba(201,168,76,0.4);}
+
+  /* MAIN */
+  .main{margin-left:240px;flex:1;padding:2rem 2.5rem;min-height:100vh;}
+  .page-head{display:flex;align-items:center;gap:1rem;margin-bottom:2rem;}
+  .page-head h1{font-family:'Playfair Display',serif;font-size:2rem;color:var(--gold);}
+  .badge{background:var(--rust);color:var(--cream);font-size:0.75rem;padding:0.2rem 0.6rem;border-radius:20px;letter-spacing:0.05em;}
+
+  /* PANELS */
+  .panel{background:var(--panel);border:1px solid rgba(201,168,76,0.18);border-radius:4px;padding:1.5rem;margin-bottom:1.5rem;backdrop-filter:blur(6px);}
+  .panel h2{font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--gold);margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem;}
+  .section{display:none;} .section.active{display:block;}
+
+  /* TABLE */
+  table{width:100%;border-collapse:collapse;font-size:0.95rem;}
+  th{text-align:left;padding:0.5rem 0.8rem;color:var(--gold);font-weight:600;font-size:0.8rem;letter-spacing:0.1em;text-transform:uppercase;border-bottom:1px solid rgba(201,168,76,0.25);}
+  td{padding:0.55rem 0.8rem;border-bottom:1px solid rgba(245,240,232,0.07);}
+  tr:hover td{background:rgba(201,168,76,0.04);}
+
+  /* FORM */
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;}
+  label{display:block;font-size:0.78rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);margin-bottom:0.3rem;}
+  input,select,textarea{width:100%;background:rgba(0,0,0,0.35);border:1px solid rgba(201,168,76,0.25);border-radius:3px;color:var(--cream);font-family:'Crimson Pro',serif;font-size:1rem;padding:0.6rem 0.9rem;outline:none;transition:border-color 0.2s;}
+  input:focus,select:focus,textarea:focus{border-color:var(--gold);}
+  select option{background:#1a1208;}
+  .btn{padding:0.7rem 1.8rem;background:var(--gold);color:var(--dark);font-family:'Playfair Display',serif;font-weight:700;font-size:0.9rem;letter-spacing:0.08em;text-transform:uppercase;border:none;border-radius:3px;cursor:pointer;transition:all 0.2s;}
+  .btn:hover{background:#e0b85a;transform:translateY(-1px);}
+  .btn-outline{background:none;border:1px solid var(--gold);color:var(--gold);}
+  .btn-outline:hover{background:rgba(201,168,76,0.12);}
+  .btn-sm{padding:0.35rem 0.8rem;font-size:0.78rem;}
+  .btn-danger{background:#c0392b;}
+  .btn-danger:hover{background:#e74c3c;}
+
+  /* WAGE CARD */
+  .wage-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;}
+  .wage-card{background:rgba(0,0,0,0.3);border:1px solid rgba(201,168,76,0.2);border-radius:4px;padding:1.2rem;}
+  .wage-card .name{font-family:'Playfair Display',serif;font-size:1rem;color:var(--gold);}
+  .wage-card .role{font-size:0.78rem;color:rgba(245,240,232,0.45);margin:0.2rem 0 0.7rem;text-transform:uppercase;letter-spacing:0.1em;}
+  .wage-card .amount{font-size:1.7rem;font-weight:600;color:var(--cream);}
+  .wage-card .hours{font-size:0.85rem;color:rgba(245,240,232,0.5);margin-top:0.2rem;}
+
+  /* REPORT */
+  .report-box{background:rgba(0,0,0,0.3);border:1px solid rgba(201,168,76,0.2);border-radius:4px;padding:1.5rem;font-size:0.95rem;line-height:1.7;white-space:pre-wrap;color:rgba(245,240,232,0.8);}
+  .status-ok{color:#6ab187;} .status-warn{color:#e07a5f;}
+
+  /* PRICE TABLE */
+  .price-row{display:flex;align-items:center;gap:1rem;padding:0.7rem 0;border-bottom:1px solid rgba(245,240,232,0.07);}
+  .price-row label{margin:0;min-width:150px;text-transform:none;letter-spacing:0;font-size:1rem;color:var(--cream);}
+  .price-row input{max-width:120px;}
+
+  .toast{position:fixed;bottom:2rem;right:2rem;background:var(--gold);color:var(--dark);padding:0.8rem 1.5rem;border-radius:4px;font-weight:600;transform:translateY(100px);opacity:0;transition:all 0.3s;z-index:99;}
+  .toast.show{transform:translateY(0);opacity:1;}
+</style>
+</head>
+<body>
+<nav class="sidebar">
+  <div class="logo">👑 Owner Panel</div>
+  <button class="nav-btn active" onclick="show('wages',this)"><span class="ico">💰</span>Employee Wages</button>
+  <button class="nav-btn" onclick="show('prices',this)"><span class="ico">🏷</span>Pass Prices</button>
+  <button class="nav-btn" onclick="show('report',this)"><span class="ico">📋</span>Daily Report</button>
+  <button class="nav-btn" onclick="show('newreport',this)"><span class="ico">🔄</span>Order New Report</button>
+  <a class="back" href="index.html">← Back to Login</a>
+</nav>
+
+<main class="main">
+  <!-- WAGES -->
+  <section class="section active" id="wages">
+    <div class="page-head"><h1>Employee Wages</h1><span class="badge">Week 14 / 2026</span></div>
+    <div class="panel">
+      <h2>⏱ Weekly Hours & Wages</h2>
+      <p style="font-size:0.9rem;color:rgba(245,240,232,0.5);margin-bottom:1.2rem;">Hours are automatically calculated from employee clock-in records. Rates set below.</p>
+      <div class="wage-grid" id="wageGrid"></div>
+    </div>
+    <div class="panel">
+      <h2>⚙️ Hourly Rates</h2>
+      <div id="rateForm"></div>
+      <button class="btn" onclick="saveRates()" style="margin-top:1rem;">Save Rates & Recalculate</button>
+    </div>
+  </section>
+
+  <!-- PRICES -->
+  <section class="section" id="prices">
+    <div class="page-head"><h1>Pass Prices</h1></div>
+    <div class="panel">
+      <h2>🎟 Current Pass Prices</h2>
+      <div id="priceList"></div>
+      <button class="btn" onclick="savePrices()" style="margin-top:1.5rem;">Update Prices</button>
+    </div>
+  </section>
+
+  <!-- REPORT -->
+  <section class="section" id="report">
+    <div class="page-head"><h1>Daily Report</h1></div>
+    <div class="panel">
+      <h2>📋 Latest Report — <span id="reportDate"></span></h2>
+      <div class="report-box" id="reportContent"></div>
+      <div style="margin-top:1rem;display:flex;gap:0.8rem;">
+        <button class="btn" onclick="verifyReport()">✔ Verify Report</button>
+        <button class="btn btn-outline" onclick="orderReport()">🔄 Order New Report</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ORDER NEW REPORT -->
+  <section class="section" id="newreport">
+    <div class="page-head"><h1>Order New Report</h1></div>
+    <div class="panel">
+      <h2>🔄 Request a Fresh Report</h2>
+      <p style="font-size:0.9rem;color:rgba(245,240,232,0.5);margin-bottom:1.5rem;">Manually trigger generation of a new daily stable condition report. The report will be compiled from current employee records, lesson logs, and stable status.</p>
+      <div class="form-row" style="margin-bottom:1rem;">
+        <div>
+          <label for="reportType">Report type</label>
+          <select id="reportType">
+            <option>Full daily report</option>
+            <option>Horses & health only</option>
+            <option>Lessons & staff only</option>
+            <option>Supplies & maintenance only</option>
+          </select>
+        </div>
+        <div>
+          <label for="reportDate2">Date</label>
+          <input type="date" id="reportDate2">
+        </div>
+      </div>
+      <label for="reportNote">Additional instructions (optional)</label>
+      <textarea id="reportNote" style="width:100%;background:rgba(0,0,0,0.35);border:1px solid rgba(201,168,76,0.25);border-radius:3px;color:var(--cream);font-family:'Crimson Pro',serif;font-size:1rem;padding:0.6rem 0.9rem;outline:none;resize:vertical;min-height:80px;margin-bottom:0.3rem;" placeholder="e.g. focus on Burza's health status, include farrier notes…"></textarea>
+      <div style="margin-top:1rem;display:flex;gap:0.8rem;">
+        <button class="btn" onclick="submitNewReport()">🔄 Generate New Report</button>
+      </div>
+      <div id="orderSuccess" style="display:none;margin-top:1.5rem;background:rgba(106,177,135,0.12);border:1px solid rgba(106,177,135,0.35);border-radius:4px;padding:1.2rem;">
+        <div style="color:#6ab187;font-family:'Playfair Display',serif;font-size:1.05rem;margin-bottom:0.4rem;">✔ Report Ordered</div>
+        <div style="font-size:0.9rem;color:rgba(245,240,232,0.6);">A new report has been queued. It will appear in <strong>Daily Report</strong> within a few minutes.</div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const employees=[
+  {name:'Anna Kowalska',role:'Instructor',hours:38,rate:28},
+  {name:'Piotr Nowak',role:'Instructor',hours:40,rate:28},
+  {name:'Maria Wiśniewska',role:'Therapist',hours:36,rate:32},
+  {name:'Jan Kowalczyk',role:'Helper',hours:42,rate:18},
+  {name:'Zofia Kamińska',role:'Helper',hours:35,rate:18},
+];
+
+const passes=[
+  {label:'5-lesson pass',price:350},
+  {label:'10-lesson pass',price:650},
+  {label:'Monthly unlimited',price:1100},
+  {label:'Kids starter pack (3 lessons)',price:180},
+];
+
+function show(id,btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+/* WAGES */
+function renderWages(){
+  const grid=document.getElementById('wageGrid');
+  const rateForm=document.getElementById('rateForm');
+  grid.innerHTML='';
+  rateForm.innerHTML='';
+  employees.forEach((e,i)=>{
+    const wage=(e.hours*e.rate).toFixed(2);
+    grid.innerHTML+=`<div class="wage-card">
+      <div class="name">${e.name}</div>
+      <div class="role">${e.role}</div>
+      <div class="amount">${wage} PLN</div>
+      <div class="hours">${e.hours} hrs × ${e.rate} PLN/hr</div>
+    </div>`;
+    rateForm.innerHTML+=`<div class="price-row">
+      <label>${e.name} (${e.role})</label>
+      <input type="number" id="rate_${i}" value="${e.rate}" min="1"> PLN/hr
+    </div>`;
+  });
+}
+
+function saveRates(){
+  employees.forEach((e,i)=>{
+    const v=parseFloat(document.getElementById('rate_'+i).value);
+    if(!isNaN(v) && v>0) e.rate=v;
+  });
+  renderWages();
+  toast('Rates saved & wages recalculated ✓');
+}
+
+/* PRICES */
+function renderPrices(){
+  const list=document.getElementById('priceList');
+  list.innerHTML='';
+  passes.forEach((p,i)=>{
+    list.innerHTML+=`<div class="price-row">
+      <label>${p.label}</label>
+      <input type="number" id="pass_${i}" value="${p.price}" min="1"> PLN
+    </div>`;
+  });
+}
+
+function savePrices(){
+  passes.forEach((p,i)=>{
+    const v=parseFloat(document.getElementById('pass_'+i).value);
+    if(!isNaN(v) && v>0) p.price=v;
+  });
+  toast('Prices updated ✓');
+}
+
+/* REPORT */
+const reportData=`DAILY STABLE CONDITION REPORT
+Date: ${new Date().toLocaleDateString('en-GB',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}
+Generated: ${new Date().toLocaleTimeString()}
+
+──────────────────────────────────────
+HORSES (12 total)
+  ✔  All horses fed and watered
+  ✔  Morning health check completed
+  ⚠  Stallion "Burza" – mild lameness observed, vet notified
+  ✔  11 horses in good health
+
+STALLS
+  ✔  All 12 stalls cleaned
+  ✔  Fresh bedding applied
+  ⚠  Stall #7 door latch needs repair (reported to helper)
+
+LESSONS TODAY
+  Completed: 8 lessons
+  Cancelled:  1 lesson (Instructor Nowak – illness)
+  Clients notified of cancellation: ✔
+
+SUPPLIES
+  ✔  Feed stock: sufficient (estimated 14 days)
+  ⚠  Hay reserve low – order recommended within 3 days
+  ✔  Farrier scheduled for Thursday
+
+STATUS: Requires attention on 3 items above.`;
+
+function renderReport(){
+  document.getElementById('reportDate').textContent=new Date().toLocaleDateString('en-GB');
+  document.getElementById('reportContent').textContent=reportData;
+}
+
+let verified=false;
+function verifyReport(){
+  verified=true;
+  toast('Report verified ✓');
+}
+function submitNewReport(){
+  const type=document.getElementById('reportType').value;
+  document.getElementById('orderSuccess').style.display='block';
+  toast('New report ordered: '+type+' ✓');
+  setTimeout(()=>{document.getElementById('orderSuccess').style.display='none';},5000);
+}
+function orderReport(){
+  document.getElementById('reportContent').textContent='Generating new report…\n\n' + reportData.replace('Generated: '+new Date().toLocaleTimeString(),'Generated: '+new Date().toLocaleTimeString());
+  toast('New report ordered ✓');
+}
+
+renderWages();
+renderPrices();
+renderReport();
+</script>
+</body>
+</html>

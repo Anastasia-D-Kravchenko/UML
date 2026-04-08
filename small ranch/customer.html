@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Small Ranch – Customer</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Crimson+Pro:wght@300;400;600&display=swap');
+  :root{--cream:#f5f0e8;--brown:#3d2b1f;--gold:#c9a84c;--rust:#8b4513;--sage:#6b7c5e;--dark:#1a1208;--panel:rgba(245,240,232,0.05);}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--dark);color:var(--cream);font-family:'Crimson Pro',serif;min-height:100vh;display:flex;}
+  body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 70% 20%,rgba(201,168,76,0.1) 0%,transparent 50%),radial-gradient(ellipse at 20% 90%,rgba(139,69,19,0.12) 0%,transparent 55%);pointer-events:none;}
+  .sidebar{width:240px;min-height:100vh;background:rgba(0,0,0,0.4);border-right:1px solid rgba(201,168,76,0.2);display:flex;flex-direction:column;padding:2rem 1.2rem;gap:0.3rem;position:fixed;top:0;left:0;}
+  .logo{font-family:'Playfair Display',serif;font-size:1.25rem;color:var(--gold);margin-bottom:0.3rem;}
+  .user-id{font-size:0.75rem;color:rgba(245,240,232,0.35);margin-bottom:1.5rem;letter-spacing:0.1em;}
+  .nav-btn{background:none;border:none;color:rgba(245,240,232,0.65);font-family:'Crimson Pro',serif;font-size:1rem;padding:0.65rem 1rem;border-radius:3px;text-align:left;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:0.6rem;}
+  .nav-btn:hover,.nav-btn.active{background:rgba(201,168,76,0.12);color:var(--gold);}
+  .back{margin-top:auto;color:rgba(245,240,232,0.35);font-size:0.85rem;text-decoration:none;display:block;text-align:center;padding:0.5rem;border:1px solid rgba(201,168,76,0.1);border-radius:3px;transition:all 0.2s;}
+  .back:hover{color:var(--gold);border-color:rgba(201,168,76,0.4);}
+  .main{margin-left:240px;flex:1;padding:2rem 2.5rem;}
+  .page-head h1{font-family:'Playfair Display',serif;font-size:2rem;color:var(--gold);margin-bottom:2rem;}
+  .panel{background:var(--panel);border:1px solid rgba(201,168,76,0.18);border-radius:4px;padding:1.5rem;margin-bottom:1.5rem;}
+  .panel h2{font-family:'Playfair Display',serif;font-size:1.15rem;color:var(--gold);margin-bottom:1rem;}
+  .section{display:none;} .section.active{display:block;}
+  label{display:block;font-size:0.78rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);margin-bottom:0.3rem;margin-top:0.9rem;}
+  input,select{width:100%;background:rgba(0,0,0,0.35);border:1px solid rgba(201,168,76,0.25);border-radius:3px;color:var(--cream);font-family:'Crimson Pro',serif;font-size:1rem;padding:0.6rem 0.9rem;outline:none;transition:border-color 0.2s;}
+  input:focus,select:focus{border-color:var(--gold);}
+  select option{background:#1a1208;}
+  .btn{padding:0.7rem 1.8rem;background:var(--gold);color:var(--dark);font-family:'Playfair Display',serif;font-weight:700;font-size:0.9rem;letter-spacing:0.08em;text-transform:uppercase;border:none;border-radius:3px;cursor:pointer;transition:all 0.2s;margin-top:1rem;}
+  .btn:hover{background:#e0b85a;transform:translateY(-1px);}
+  .btn-outline{background:none;border:1px solid var(--gold);color:var(--gold);}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+
+  /* CALENDAR */
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:0.3rem;margin-top:0.5rem;}
+  .cal-day{background:rgba(0,0,0,0.2);border:1px solid rgba(201,168,76,0.08);border-radius:3px;min-height:70px;padding:0.3rem;}
+  .cal-day.has-slot{border-color:rgba(107,124,94,0.5);cursor:pointer;transition:all 0.2s;}
+  .cal-day.has-slot:hover{border-color:var(--gold);background:rgba(201,168,76,0.08);}
+  .cal-day.selected{border-color:var(--gold);background:rgba(201,168,76,0.12);}
+  .cal-day .cal-num{font-size:0.75rem;color:rgba(245,240,232,0.35);margin-bottom:0.3rem;}
+  .cal-day.has-slot .cal-num{color:var(--gold);}
+  .cal-slot{font-size:0.7rem;background:rgba(107,124,94,0.3);border-radius:2px;padding:0.15rem 0.3rem;margin-bottom:0.15rem;color:rgba(245,240,232,0.7);}
+  .cal-header{display:grid;grid-template-columns:repeat(7,1fr);gap:0.3rem;margin-bottom:0.2rem;}
+  .cal-header div{text-align:center;font-size:0.72rem;letter-spacing:0.1em;color:rgba(245,240,232,0.4);text-transform:uppercase;padding:0.2rem;}
+
+  /* PASSES */
+  .pass-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem;margin-bottom:1.5rem;}
+  .pass-card{background:rgba(0,0,0,0.3);border:1px solid rgba(201,168,76,0.2);border-radius:4px;padding:1.3rem;cursor:pointer;transition:all 0.2s;}
+  .pass-card:hover,.pass-card.sel{border-color:var(--gold);background:rgba(201,168,76,0.08);}
+  .pass-name{font-family:'Playfair Display',serif;font-size:1rem;color:var(--gold);margin-bottom:0.3rem;}
+  .pass-price{font-size:1.5rem;font-weight:600;color:var(--cream);}
+  .pass-price span{font-size:0.8rem;color:rgba(245,240,232,0.4);}
+  .pay-method{display:flex;gap:1rem;margin-top:0.5rem;flex-wrap:wrap;}
+  .pay-opt{border:1px solid rgba(201,168,76,0.25);border-radius:3px;padding:0.6rem 1.2rem;cursor:pointer;font-size:0.9rem;transition:all 0.2s;color:rgba(245,240,232,0.7);}
+  .pay-opt:hover,.pay-opt.sel{border-color:var(--gold);color:var(--gold);background:rgba(201,168,76,0.08);}
+
+  /* BOOKINGS */
+  .booking-card{background:rgba(0,0,0,0.3);border:1px solid rgba(201,168,76,0.15);border-radius:3px;padding:1rem;margin-bottom:0.7rem;display:flex;justify-content:space-between;align-items:center;}
+  .b-info{}
+  .b-date{font-family:'Playfair Display',serif;color:var(--gold);}
+  .b-detail{font-size:0.85rem;color:rgba(245,240,232,0.5);margin-top:0.2rem;}
+  .b-status{font-size:0.8rem;padding:0.2rem 0.6rem;border-radius:20px;background:rgba(106,177,135,0.2);color:#6ab187;}
+  .b-status.cancelled{background:rgba(192,57,43,0.2);color:#e07a5f;}
+
+  .balance-box{background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.3);border-radius:3px;padding:1rem 1.5rem;display:inline-block;margin-bottom:1.5rem;}
+  .balance-box .label{font-size:0.75rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(201,168,76,0.7);}
+  .balance-box .amount{font-size:2rem;font-weight:600;color:var(--gold);}
+
+  .toast{position:fixed;bottom:2rem;right:2rem;background:var(--gold);color:var(--dark);padding:0.8rem 1.5rem;border-radius:4px;font-weight:600;transform:translateY(100px);opacity:0;transition:all 0.3s;z-index:99;}
+  .toast.show{transform:translateY(0);opacity:1;}
+  .info-msg{background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.2);border-radius:3px;padding:0.7rem 1rem;font-size:0.88rem;color:rgba(245,240,232,0.65);margin-bottom:1rem;}
+</style>
+</head>
+<body>
+<nav class="sidebar">
+  <div class="logo">🎟 Customer Portal</div>
+  <div class="user-id">ID: SR-1001 · Jan Wiśniewski</div>
+  <button class="nav-btn active" onclick="show('book',this)"><span>📅</span> Book a Lesson</button>
+  <button class="nav-btn" onclick="show('buyLesson',this)"><span>🎫</span> Buy Single Lesson</button>
+  <button class="nav-btn" onclick="show('buyPass',this)"><span>🏷</span> Buy Pass</button>
+  <a class="back" href="index.html">← Back to Login</a>
+</nav>
+
+<!-- TOP-RIGHT LOG IN BUTTON -->
+<div style="position:fixed;top:1rem;right:1.5rem;z-index:100;">
+  <a href="index.html" style="display:inline-block;padding:0.45rem 1.2rem;background:none;border:1px solid rgba(201,168,76,0.45);border-radius:3px;color:var(--gold);font-family:'Playfair Display',serif;font-size:0.85rem;letter-spacing:0.08em;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='rgba(201,168,76,0.12)'" onmouseout="this.style.background='none'">Log Out</a>
+</div>
+
+<main class="main">
+
+  <!-- BOOK -->
+  <section class="section active" id="book">
+    <div class="page-head"><h1>Book a Riding Lesson</h1></div>
+    <div class="panel">
+      <h2>1. Select Date & Check Instructor Availability</h2>
+      <div class="cal-header">
+        <div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+    </div>
+    <div class="panel" id="slotPanel" style="display:none;">
+      <h2>2. Select Instructor & Slot</h2>
+      <div class="info-msg">📅 Selected date: <strong id="selDateLabel">—</strong></div>
+      <label for="selInstructor">Available instructor</label>
+      <select id="selInstructor">
+        <option>Anna Kowalska – 09:00 (available)</option>
+        <option>Anna Kowalska – 11:00 (available)</option>
+        <option>Piotr Nowak – 10:00 (available)</option>
+      </select>
+      <button class="btn" onclick="bookLesson()">Confirm Booking</button>
+    </div>
+  </section>
+
+  <!-- BUY SINGLE LESSON -->
+  <section class="section" id="buyLesson">
+    <div class="page-head"><h1>Buy Single Lesson</h1></div>
+    <div class="panel">
+      <h2>🎫 Single Lesson</h2>
+      <p style="font-size:0.9rem;color:rgba(245,240,232,0.55);margin-bottom:1rem;">Pay for a single lesson directly — cash or card at reception.</p>
+      <div style="font-size:1.4rem;color:var(--gold);margin-bottom:1rem;">80 PLN / lesson</div>
+      <button class="btn btn-outline" onclick="buySingle()">Buy Single Lesson</button>
+    </div>
+  </section>
+
+  <!-- BUY PASS -->
+  <section class="section" id="buyPass">
+    <div class="page-head"><h1>Buy Pass</h1></div>
+    <div class="panel">
+      <h2>🏷 Passes</h2>
+      <div class="info-msg">💳 Passes can be paid from your account balance via bank transfer.</div>
+      <div class="pass-grid" id="passGrid"></div>
+      <label>Payment method</label>
+      <div class="pay-method">
+        <div class="pay-opt sel" id="payBank" onclick="selPay('bank')">🏦 Account Balance (Bank)</div>
+      </div>
+      <div class="info-msg" style="margin-top:0.8rem;">Only passes can be paid from the account balance. Single lessons must be paid at reception.</div>
+      <button class="btn" onclick="buyPass()">Purchase Selected Pass</button>
+    </div>
+  </section>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const passes=[
+  {label:'5-lesson pass',price:350,lessons:5},
+  {label:'10-lesson pass',price:650,lessons:10},
+  {label:'Monthly unlimited',price:1100,lessons:null},
+  {label:'Kids starter (3 lessons)',price:180,lessons:3},
+];
+
+let balance=1200;
+let selectedPass=0;
+let selectedDate=null;
+
+const bookings=[
+  {date:'Mon, Apr 7',time:'09:00',instructor:'Anna Kowalska',status:'confirmed'},
+  {date:'Wed, Apr 5',time:'09:00',instructor:'Piotr Nowak',status:'confirmed'},
+  {date:'Mon, Mar 31',time:'11:00',instructor:'Anna Kowalska',status:'cancelled',note:'Cancelled by instructor (illness)'},
+];
+
+const transactions=[
+  {date:'2026-03-15',desc:'10-lesson pass purchased',amount:-650,type:'debit'},
+  {date:'2026-03-01',desc:'Account top-up (bank transfer)',amount:1200,type:'credit'},
+  {date:'2026-02-10',desc:'5-lesson pass purchased',amount:-350,type:'debit'},
+];
+
+function show(id,btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+/* CALENDAR */
+const slotsAvail=[1,3,5,8,10,12,14];
+function renderCal(){
+  const grid=document.getElementById('calGrid');
+  grid.innerHTML='';
+  for(let d=1;d<=14;d++){
+    const has=slotsAvail.includes(d);
+    const slots=has?['09:00 – Kowalska','11:00 – Nowak']:'';
+    const div=document.createElement('div');
+    div.className='cal-day'+(has?' has-slot':'');
+    div.innerHTML=`<div class="cal-num">Apr ${d}</div>${has?slots.map(s=>`<div class="cal-slot">${s}</div>`).join(''):''}`;
+    if(has) div.onclick=()=>selectDate(d,div);
+    grid.appendChild(div);
+  }
+}
+
+function selectDate(d,el){
+  document.querySelectorAll('.cal-day').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedDate=d;
+  document.getElementById('selDateLabel').textContent=`April ${d}, 2026`;
+  document.getElementById('slotPanel').style.display='block';
+}
+
+function bookLesson(){
+  if(!selectedDate){toast('Please select a date first.');return;}
+  const inst=document.getElementById('selInstructor').value;
+  bookings.unshift({date:`Apr ${selectedDate}`,time:inst.match(/(\d+:\d+)/)[1],instructor:inst.split(' – ')[0],status:'confirmed'});
+  document.getElementById('slotPanel').style.display='none';
+  document.querySelectorAll('.cal-day').forEach(c=>c.classList.remove('selected'));
+  toast('Lesson booked ✓ Confirmation sent to your e-mail');
+}
+
+function renderBookings(){
+  const el=document.getElementById('bookingList');
+  el.innerHTML=bookings.map(b=>`<div class="booking-card">
+    <div class="b-info">
+      <div class="b-date">${b.date} · ${b.time}</div>
+      <div class="b-detail">Instructor: ${b.instructor}${b.note?'<br><em>'+b.note+'</em>':''}</div>
+    </div>
+    <div class="b-status ${b.status==='cancelled'?'cancelled':''}">${b.status==='confirmed'?'✔ Confirmed':'✗ Cancelled'}</div>
+  </div>`).join('');
+}
+
+/* PASSES */
+function renderPasses(){
+  const grid=document.getElementById('passGrid');
+  grid.innerHTML=passes.map((p,i)=>`<div class="pass-card ${i===selectedPass?'sel':''}" onclick="selPass(${i})">
+    <div class="pass-name">${p.label}</div>
+    <div class="pass-price">${p.price} <span>PLN</span></div>
+    ${p.lessons?`<div style="font-size:0.78rem;color:rgba(245,240,232,0.4);margin-top:0.3rem;">${p.lessons} lessons</div>`:'<div style="font-size:0.78rem;color:rgba(245,240,232,0.4);margin-top:0.3rem;">unlimited / month</div>'}
+  </div>`).join('');
+}
+
+function selPass(i){ selectedPass=i; renderPasses(); }
+function selPay(m){
+  document.querySelectorAll('.pay-opt').forEach(o=>o.classList.remove('sel'));
+  document.getElementById('pay'+m.charAt(0).toUpperCase()+m.slice(1)).classList.add('sel');
+}
+
+function buySingle(){
+  toast('Single lesson purchase recorded. Please pay at reception ✓');
+}
+
+function buyPass(){
+  const p=passes[selectedPass];
+  if(balance<p.price){toast('Insufficient account balance.');return;}
+  balance-=p.price;
+  toast(`${p.label} purchased for ${p.price} PLN ✓`);
+}
+
+/* BALANCE */
+function renderTx(){
+  const el=document.getElementById('txList');
+  el.innerHTML=transactions.map(tx=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:0.65rem 0;border-bottom:1px solid rgba(245,240,232,0.07);">
+    <div>
+      <div style="font-size:0.95rem;color:rgba(245,240,232,0.85);">${tx.desc}</div>
+      <div style="font-size:0.8rem;color:rgba(245,240,232,0.35);">${tx.date}</div>
+    </div>
+    <div style="font-size:1.05rem;font-weight:600;color:${tx.type==='credit'?'#6ab187':'#e07a5f'};">${tx.type==='credit'?'+':'-'}${Math.abs(tx.amount)} PLN</div>
+  </div>`).join('');
+}
+
+renderCal();
+renderPasses();
+</script>
+</body>
+</html>
